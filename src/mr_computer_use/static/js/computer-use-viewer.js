@@ -181,14 +181,14 @@ class ComputerUseViewer extends BaseEl {
 customElements.define('computer-use-viewer', ComputerUseViewer);
 
 // Register command handlers
-window.registerCommandHandler('bytebot_start', (data) => {
+window.registerCommandHandler('computer_start', (data) => {
   if (data.event === 'result') {
     return html`<div>Computer Use VM started. Use the viewer to interact or issue computer use commands.</div>`;
   }
   return null;
 });
 
-window.registerCommandHandler('bytebot_screenshot', (data) => {
+window.registerCommandHandler('computer_screenshot', (data) => {
   // The screenshot is added to chat via format_image_message
   // No need to return anything here
   return null;

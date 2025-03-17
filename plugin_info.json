@@ -10,13 +10,19 @@
     "get_bytebot_client"
   ],
   "commands": [
-    "bytebot_check_docker",
-    "bytebot_start",
-    "bytebot_stop",
-    "bytebot_screenshot",
-    "bytebot_click",
-    "bytebot_type",
-    "bytebot_press_key",
-    "bytebot_navigate"
+    "computer_check_docker",
+    "computer_start",
+    "computer_stop",
+    "computer_screenshot",
+    "computer_click",
+    "computer_type",
+    "computer_press_key",
+    "computer_navigate",
+    "computer_scroll",
+    "computer_mouse_move",
+    "computer_right_click",
+    "computer_double_click",
+    "computer_drag",
+    "computer_get_cursor_position"
   ]
 }

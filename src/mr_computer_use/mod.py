@@ -8,7 +8,7 @@ from .bytebot_client import get_bytebot_client
 logger = logging.getLogger(__name__)
 
 @command()
-async def bytebot_check_docker(params, context=None):
+async def computer_check_docker(context=None):
     """Check if Docker is installed and running.
     
     Example:
@@ -18,7 +18,7 @@ async def bytebot_check_docker(params, context=None):
     return result
 
 @command()
-async def bytebot_start(params, context=None):
+async def computer_start(context=None):
     """Start the computer use virtual desktop container.
     If the container doesn't exist, it will be created.
     If the image doesn't exist, it will be pulled from Docker Hub or built.
@@ -56,7 +56,7 @@ async def bytebot_start(params, context=None):
     return result
 
 @command()
-async def bytebot_stop(params, context=None):
+async def computer_stop(context=None):
     """Stop the computer use virtual desktop container.
     
     Example:
@@ -66,7 +66,7 @@ async def bytebot_stop(params, context=None):
     return result
 
 @command()
-async def bytebot_screenshot(params, context=None):
+async def computer_screenshot(context=None):
     """Get a screenshot from the computer use virtual desktop.
     Similar to examine_image, this will insert the screenshot into the chat.
     
@@ -87,7 +87,7 @@ async def bytebot_screenshot(params, context=None):
         return {"status": "error", "message": str(e)}
 
 @command()
-async def bytebot_click(params, context=None):
+async def computer_click(x, y, context=None):
     """Click at specified coordinates in the computer use virtual desktop.
     
     Parameters:
@@ -95,11 +95,8 @@ async def bytebot_click(params, context=None):
     y - Integer. The y coordinate to click.
     
     Example:
-    { "bytebot_click": {"x": 100, "y": 200} }
+    { "computer_click": {"x": 100, "y": 200} }
     """
-    x = params.get("x")
-    y = params.get("y")
-    
     if x is None or y is None:
         return {"status": "error", "message": "Missing x or y coordinates"}
     
@@ -118,17 +115,15 @@ async def bytebot_click(params, context=None):
     return result
 
 @command()
-async def bytebot_type(params, context=None):
+async def computer_type(text, context=None):
     """Type text in the computer use virtual desktop.
     
     Parameters:
     text - String. The text to type.
     
     Example:
-    { "bytebot_type": {"text": "Hello, world!"} }
+    { "computer_type": {"text": "Hello, world!"} }
     """
-    text = params.get("text")
-    
     if not text:
         return {"status": "error", "message": "Missing text parameter"}
     
@@ -147,17 +142,15 @@ async def bytebot_type(params, context=None):
     return result
 
 @command()
-async def bytebot_press_key(params, context=None):
+async def computer_press_key(key, context=None):
     """Press a keyboard key in the computer use virtual desktop.
     
     Parameters:
     key - String. The key to press (e.g., "enter", "tab", "escape").
     
     Example:
-    { "bytebot_press_key": {"key": "enter"} }
+    { "computer_press_key": {"key": "enter"} }
     """
-    key = params.get("key")
-    
     if not key:
         return {"status": "error", "message": "Missing key parameter"}
     
@@ -176,17 +169,15 @@ async def bytebot_press_key(params, context=None):
     return result
 
 @command()
-async def bytebot_navigate(params, context=None):
+async def computer_navigate(url, context=None):
     """Navigate to a URL in the browser in the computer use virtual desktop.
     
     Parameters:
     url - String. The URL to navigate to.
     
     Example:
-    { "bytebot_navigate": {"url": "https://www.example.com"} }
+    { "computer_navigate": {"url": "https://www.example.com"} }
     """
-    url = params.get("url")
-    
     if not url:
         return {"status": "error", "message": "Missing url parameter"}
     
@@ -205,3 +196,125 @@ async def bytebot_navigate(params, context=None):
         pass  # Don't fail the command if screenshot fails
     
     return result
+@command()
+async def computer_scroll(amount, axis='v', context=None):
+    """Scroll the page vertically or horizontally.
+    
+    Parameters:
+    amount - Integer. Positive for down/right, negative for up/left scrolling.
+    axis - String. 'v' for vertical (default), 'h' for horizontal scrolling.
+    
+    Example:
+    { "computer_scroll": {"amount": 300} }  # Scroll down 300 pixels
+    { "computer_scroll": {"amount": -100, "axis": "h"} }  # Scroll left 100 pixels
+    """
+    client = await get_bytebot_client(context)
+    result = await client.scroll(amount, axis)
+    
+    # Get a screenshot after scrolling to show the result
+    try:
+        screenshot = await client.get_screenshot()
+        if screenshot:
+            await context.format_image_message(screenshot)
+    except Exception as e:
+        logger.error(f"Post-scroll screenshot error: {str(e)}")
+        pass  # Don't fail the command if screenshot fails
+    
+    return result
+
+@command()
+async def computer_mouse_move(x, y, context=None):
+    """Move the mouse cursor to the specified coordinates without clicking.
+    
+    Parameters:
+    x - Integer. The x coordinate to move to.
+    y - Integer. The y coordinate to move to.
+    
+    Example:
+    { "computer_mouse_move": {"x": 100, "y": 200} }
+    """
+    client = await get_bytebot_client(context)
+    result = await client.mouse_move(x, y)
+    return result
+
+@command()
+async def computer_right_click(context=None):
+    """Perform a right mouse click at the current cursor position.
+    Use computer_mouse_move first to position the cursor.
+    
+    Example:
+    { "computer_right_click": {} }
+    """
+    client = await get_bytebot_client(context)
+    result = await client.right_click()
+    
+    # Get a screenshot after clicking to show the result
+    try:
+        screenshot = await client.get_screenshot()
+        if screenshot:
+            await context.format_image_message(screenshot)
+    except Exception as e:
+        logger.error(f"Post-right-click screenshot error: {str(e)}")
+        pass  # Don't fail the command if screenshot fails
+    
+    return result
+
+@command()
+async def computer_double_click(context=None):
+    """Perform a double-click at the current cursor position.
+    Use computer_mouse_move first to position the cursor.
+    
+    Example:
+    { "computer_double_click": {} }
+    """
+    client = await get_bytebot_client(context)
+    result = await client.double_click()
+    
+    # Get a screenshot after clicking to show the result
+    try:
+        screenshot = await client.get_screenshot()
+        if screenshot:
+            await context.format_image_message(screenshot)
+    except Exception as e:
+        logger.error(f"Post-double-click screenshot error: {str(e)}")
+        pass  # Don't fail the command if screenshot fails
+    
+    return result
+
+@command()
+async def computer_drag(start_x, start_y, end_x, end_y, hold_ms=100, context=None):
+    """Perform a drag operation from start to end coordinates.
+    
+    Parameters:
+    start_x - Integer. The starting x coordinate.
+    start_y - Integer. The starting y coordinate.
+    end_x - Integer. The ending x coordinate.
+    end_y - Integer. The ending y coordinate.
+    hold_ms - Integer. Optional. Hold time in milliseconds (default: 100).
+    
+    Example:
+    { "computer_drag": {"start_x": 100, "start_y": 200, "end_x": 300, "end_y": 400} }
+    """
+    client = await get_bytebot_client(context)
+    result = await client.drag(start_x, start_y, end_x, end_y, hold_ms)
+    
+    # Get a screenshot after dragging to show the result
+    try:
+        screenshot = await client.get_screenshot()
+        if screenshot:
+            await context.format_image_message(screenshot)
+    except Exception as e:
+        logger.error(f"Post-drag screenshot error: {str(e)}")
+        pass  # Don't fail the command if screenshot fails
+    
+    return result
+
+@command()
+async def computer_get_cursor_position(context=None):
+    """Get the current cursor position.
+    
+    Example:
+    { "computer_get_cursor_position": {} }
+    """
+    client = await get_bytebot_client(context)
+    return await client.get_cursor_position()

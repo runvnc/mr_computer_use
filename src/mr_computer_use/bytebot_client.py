@@ -83,3 +83,82 @@ class BytebotClient:
 async def get_bytebot_client(context=None):
     """Get a configured bytebot client instance"""
     return BytebotClient()
+    async def scroll(self, amount, axis='v'):
+        """Scroll vertically or horizontally
+        
+        Args:
+            amount: Integer. Positive for down/right, negative for up/left
+            axis: String. 'v' for vertical, 'h' for horizontal
+        """
+        try:
+            async with aiohttp.ClientSession() as session:
+                url = f"{self.api_url}/computer-use/scroll"
+                payload = {"amount": amount, "axis": axis}
+                async with session.post(url, json=payload) as response:
+                    return await response.json()
+        except Exception as e:
+            logger.error(f"Scroll error: {str(e)}")
+            return {"status": "error", "message": str(e)}
+
+    async def mouse_move(self, x, y):
+        """Move the mouse cursor to the specified coordinates"""
+        try:
+            async with aiohttp.ClientSession() as session:
+                url = f"{self.api_url}/computer-use/mouse-move"
+                payload = {"x": x, "y": y}
+                async with session.post(url, json=payload) as response:
+                    return await response.json()
+        except Exception as e:
+            logger.error(f"Mouse move error: {str(e)}")
+            return {"status": "error", "message": str(e)}
+
+    async def right_click(self):
+        """Perform a right mouse click at the current cursor position"""
+        try:
+            async with aiohttp.ClientSession() as session:
+                url = f"{self.api_url}/computer-use/right-click"
+                async with session.post(url) as response:
+                    return await response.json()
+        except Exception as e:
+            logger.error(f"Right click error: {str(e)}")
+            return {"status": "error", "message": str(e)}
+
+    async def double_click(self):
+        """Perform a double-click at the current cursor position"""
+        try:
+            async with aiohttp.ClientSession() as session:
+                url = f"{self.api_url}/computer-use/double-click"
+                async with session.post(url) as response:
+                    return await response.json()
+        except Exception as e:
+            logger.error(f"Double click error: {str(e)}")
+            return {"status": "error", "message": str(e)}
+
+    async def drag(self, start_x, start_y, end_x, end_y, hold_ms=100):
+        """Perform a drag operation from start to end coordinates"""
+        try:
+            async with aiohttp.ClientSession() as session:
+                url = f"{self.api_url}/computer-use/left-click-drag"
+                payload = {
+                    "startX": start_x,
+                    "startY": start_y,
+                    "endX": end_x,
+                    "endY": end_y,
+                    "holdMs": hold_ms
+                }
+                async with session.post(url, json=payload) as response:
+                    return await response.json()
+        except Exception as e:
+            logger.error(f"Drag error: {str(e)}")
+            return {"status": "error", "message": str(e)}
+
+    async def get_cursor_position(self):
+        """Get the current cursor position"""
+        try:
+            async with aiohttp.ClientSession() as session:
+                url = f"{self.api_url}/computer-use/cursor-position"
+                async with session.get(url) as response:
+                    return await response.json()
+        except Exception as e:
+            logger.error(f"Get cursor position error: {str(e)}")
+            return {"status": "error", "message": str(e)}

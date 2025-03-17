@@ -50,58 +50,110 @@ By default, the plugin will use the pre-built Docker image `mindroot/computer-us
 ### Check Docker
 
 ```json
-{ "bytebot_check_docker": {} }
+{ "computer_check_docker": {} }
 ```
 Checks if Docker is installed and running.
 
 ### Start VM
 
 ```json
-{ "bytebot_start": {} }
+{ "computer_start": {} }
 ```
 Starts the virtual desktop container and returns a screenshot.
 
 ### Stop VM
 
 ```json
-{ "bytebot_stop": {} }
+{ "computer_stop": {} }
 ```
 Stops the running VM container.
 
 ### Take Screenshot
 
 ```json
-{ "bytebot_screenshot": {} }
+{ "computer_screenshot": {} }
 ```
 Captures and returns a screenshot of the current VM state.
 
 ### Click
 
 ```json
-{ "bytebot_click": {"x": 100, "y": 200} }
+{ "computer_click": {"x": 100, "y": 200} }
 ```
 Clicks at the specified coordinates (x, y) in the VM.
 
 ### Type Text
 
 ```json
-{ "bytebot_type": {"text": "Hello, world!"} }
+{ "computer_type": {"text": "Hello, world!"} }
 ```
 Types the specified text in the VM.
 
 ### Press Key
 
 ```json
-{ "bytebot_press_key": {"key": "enter"} }
+{ "computer_press_key": {"key": "enter"} }
 ```
 Presses the specified key (e.g., "enter", "tab", "escape").
 
 ### Navigate to URL
 
 ```json
-{ "bytebot_navigate": {"url": "https://www.example.com"} }
+{ "computer_navigate": {"url": "https://www.example.com"} }
 ```
 Navigates to the specified URL in the browser.
+
+### Scroll
+
+```json
+{ "computer_scroll": {"amount": 300} }
+```
+
+Scrolls the page vertically (default) or horizontally. Positive values scroll down/right, negative values scroll up/left.
+
+Parameters:
+- `amount`: Integer. The amount to scroll in pixels
+- `axis`: String. Optional. 'v' for vertical (default), 'h' for horizontal
+
+### Move Mouse
+
+```json
+{ "computer_mouse_move": {"x": 100, "y": 200} }
+```
+
+Moves the mouse cursor to the specified coordinates without clicking.
+
+### Right Click
+
+```json
+{ "computer_right_click": {} }
+```
+
+Performs a right-click at the current cursor position. Use `computer_mouse_move` first to position the cursor.
+
+### Double Click
+
+```json
+{ "computer_double_click": {} }
+```
+
+Performs a double-click at the current cursor position. Use `computer_mouse_move` first to position the cursor.
+
+### Drag
+
+```json
+{ "computer_drag": {"start_x": 100, "start_y": 200, "end_x": 300, "end_y": 400} }
+```
+
+Performs a drag operation from the start coordinates to the end coordinates.
+
+### Get Cursor Position
+
+```json
+{ "computer_get_cursor_position": {} }
+```
+
+Returns the current cursor position as `{"x": number, "y": number}`.
 
 ## Web Interface
 
