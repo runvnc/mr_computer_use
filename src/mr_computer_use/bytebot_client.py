@@ -8,18 +8,18 @@ import logging
 logger = logging.getLogger(__name__)
 
 class BytebotClient:
-    def __init__(self, api_url="http://localhost:8080"):
+    def __init__(self, api_url="http://localhost:3100"):
         self.api_url = api_url
         
     async def get_screenshot(self):
         """Capture a screenshot from the VM"""
         try:
             async with aiohttp.ClientSession() as session:
-                url = f"{self.api_url}/api/screenshot"
+                url = f"{self.api_url}/computer-use/screenshot"
                 async with session.get(url) as response:
                     if response.status == 200:
                         data = await response.json()
-                        img_data = base64.b64decode(data['screenshot'])
+                        img_data = base64.b64decode(data['image'])
                         img = Image.open(BytesIO(img_data))
                         return img
                     else:
@@ -33,9 +33,14 @@ class BytebotClient:
         """Click at the specified coordinates"""
         try:
             async with aiohttp.ClientSession() as session:
-                url = f"{self.api_url}/api/click"
+                # First move to the coordinates
+                url = f"{self.api_url}/computer-use/mouse-move"
                 payload = {"x": x, "y": y}
-                async with session.post(url, json=payload) as response:
+                await session.post(url, json=payload)
+                
+                # Then click
+                url = f"{self.api_url}/computer-use/left-click"
+                async with session.post(url) as response:
                     return await response.json()
         except Exception as e:
             logger.error(f"Click error: {str(e)}")
@@ -45,7 +50,7 @@ class BytebotClient:
         """Type text"""
         try:
             async with aiohttp.ClientSession() as session:
-                url = f"{self.api_url}/api/type"
+                url = f"{self.api_url}/computer-use/type"
                 payload = {"text": text}
                 async with session.post(url, json=payload) as response:
                     return await response.json()
@@ -57,7 +62,7 @@ class BytebotClient:
         """Press a keyboard key"""
         try:
             async with aiohttp.ClientSession() as session:
-                url = f"{self.api_url}/api/keypress"
+                url = f"{self.api_url}/computer-use/key"
                 payload = {"key": key}
                 async with session.post(url, json=payload) as response:
                     return await response.json()
@@ -67,22 +72,28 @@ class BytebotClient:
 
     async def navigate_to(self, url):
         """Navigate to a URL in the browser"""
-        # This may involve multiple steps like clicking browser, typing URL, etc.
-        # For simplicity, assuming an API endpoint exists
+        # This requires multiple steps as there's no direct API
         try:
-            async with aiohttp.ClientSession() as session:
-                api_url = f"{self.api_url}/api/navigate"
-                payload = {"url": url}
-                async with session.post(api_url, json=payload) as response:
-                    return await response.json()
+            # Start Firefox (assuming it's in the dock or desktop)
+            await self.click(100, 100)  # Click somewhere in the desktop
+            await self.press_key("alt-F2")  # Open run dialog
+            await self.type_text("firefox")  # Type firefox
+            await self.press_key("Return")  # Press enter
+            
+            # Wait for browser to open
+            import asyncio
+            await asyncio.sleep(3)
+            
+            # Type the URL and navigate
+            await self.press_key("ctrl-l")  # Focus address bar
+            await self.type_text(url)  # Type the URL
+            await self.press_key("Return")  # Press enter
+            
+            return {"status": "ok", "message": f"Navigated to {url}"}
         except Exception as e:
             logger.error(f"Navigate error: {str(e)}")
             return {"status": "error", "message": str(e)}
 
-@service()
-async def get_bytebot_client(context=None):
-    """Get a configured bytebot client instance"""
-    return BytebotClient()
     async def scroll(self, amount, axis='v'):
         """Scroll vertically or horizontally
         
@@ -162,3 +173,8 @@ async def get_bytebot_client(context=None):
         except Exception as e:
             logger.error(f"Get cursor position error: {str(e)}")
             return {"status": "error", "message": str(e)}
+
+@service()
+async def get_bytebot_client(context=None):
+    """Get a configured bytebot client instance"""
+    return BytebotClient()
