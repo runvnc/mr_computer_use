@@ -1,0 +1,22 @@
+{
+  "name": "MindRoot Computer Use",
+  "version": "1.0.0",
+  "description": "Enables AI agents to control a virtual desktop environment using bytebot",
+  "services": [
+    "check_docker",
+    "build_bytebot_image",
+    "start_bytebot_container",
+    "stop_bytebot_container",
+    "get_bytebot_client"
+  ],
+  "commands": [
+    "bytebot_check_docker",
+    "bytebot_start",
+    "bytebot_stop",
+    "bytebot_screenshot",
+    "bytebot_click",
+    "bytebot_type",
+    "bytebot_press_key",
+    "bytebot_navigate"
+  ]
+}
