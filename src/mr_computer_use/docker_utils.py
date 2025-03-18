@@ -8,15 +8,14 @@ logger = logging.getLogger(__name__)
 
 # Configuration with defaults
 DEFAULT_CONFIG = {
-    "docker_image": "runvnc/bytebot:latest",  # Pre-built Docker Hub image
+    "docker_image": "mindroot/computer-use:latest",  # Pre-built Docker Hub image
     "container_name": "mindroot_computer_use",
     "ports": {
-        "8080/tcp": 8080,  # Bytebot API
-        "5900/tcp": 5900,  # VNC
-        "6080/tcp": 6080   # noVNC
+        "3100/tcp": 3100,  # Computer Use API
+        "3001/tcp": 3001,  # Web Desktop
     },
     "build_if_not_found": True,  # Whether to attempt building if image not found
-    "repo_url": "https://github.com/bytebot-ai/bytebot.git"
+    "repo_url": "https://github.com/runvnc/mr_computer_use_server.git"
 }
 
 def _get_config():
@@ -49,13 +48,13 @@ async def check_docker(context=None):
         return {"status": "error", "message": str(e)}
 
 @service()
-async def build_bytebot_image(context=None):
-    """Build the bytebot Docker image"""
+async def build_computer_image(context=None):
+    """Build the Computer Use Docker image"""
     config = _get_config()
     try:
         client = docker.from_env()
         # Clone the repo if not already present
-        repo_path = "/tmp/bytebot"
+        repo_path = "/tmp/mr_computer_use_server"
         if not os.path.exists(repo_path):
             os.system(f"git clone {config['repo_url']} {repo_path}")
         
@@ -89,7 +88,7 @@ async def ensure_image_available(context=None):
                 if config['build_if_not_found']:
                     # Try to build the image
                     logger.info(f"Failed to pull image, attempting to build: {str(pull_error)}")
-                    build_result = await build_bytebot_image(context)
+                    build_result = await build_computer_image(context)
                     if build_result["status"] == "ok":
                         build_result["source"] = "built"
                         return build_result
@@ -103,8 +102,8 @@ async def ensure_image_available(context=None):
         return {"status": "error", "message": str(e)}
 
 @service()
-async def start_bytebot_container(context=None):
-    """Start a bytebot container"""
+async def start_computer_container(context=None):
+    """Start a Computer Use container"""
     config = _get_config()
     try:
         client = docker.from_env()
@@ -143,8 +142,8 @@ async def start_bytebot_container(context=None):
         return {"status": "error", "message": str(e)}
 
 @service()
-async def stop_bytebot_container(context=None):
-    """Stop the bytebot container"""
+async def stop_computer_container(context=None):
+    """Stop the Computer Use container"""
     config = _get_config()
     try:
         client = docker.from_env()

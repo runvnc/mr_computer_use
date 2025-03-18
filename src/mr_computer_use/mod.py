@@ -2,8 +2,8 @@ from lib.providers.commands import command
 import docker
 import asyncio
 import logging
-from .docker_utils import check_docker, build_bytebot_image, ensure_image_available, start_bytebot_container, stop_bytebot_container
-from .bytebot_client import get_bytebot_client
+from .docker_utils import check_docker, build_computer_image, ensure_image_available, start_computer_container, stop_computer_container
+from .computer_client import get_computer_client
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +12,7 @@ async def computer_check_docker(context=None):
     """Check if Docker is installed and running.
     
     Example:
-    { "bytebot_check_docker": {} }
+    { "computer_check_docker": {} }
     """
     result = await check_docker(context)
     return result
@@ -24,7 +24,7 @@ async def computer_start(context=None):
     If the image doesn't exist, it will be pulled from Docker Hub or built.
     
     Example:
-    { "bytebot_start": {} }
+    { "computer_start": {} }
     """
     # Check Docker first
     docker_check = await check_docker(context)
@@ -32,11 +32,11 @@ async def computer_start(context=None):
         return docker_check
     
     # Start container
-    result = await start_bytebot_container(context)
+    result = await start_computer_container(context)
     
     # If started successfully, wait a moment and get a screenshot
     if result["status"] == "ok":
-        client = await get_bytebot_client(context)
+        client = await get_computer_client(context)
         try:
             # Wait a moment for the desktop to initialize
             await asyncio.sleep(5)  
@@ -60,9 +60,9 @@ async def computer_stop(context=None):
     """Stop the computer use virtual desktop container.
     
     Example:
-    { "bytebot_stop": {} }
+    { "computer_stop": {} }
     """
-    result = await stop_bytebot_container(context)
+    result = await stop_computer_container(context)
     return result
 
 @command()
@@ -71,9 +71,9 @@ async def computer_screenshot(context=None):
     Similar to examine_image, this will insert the screenshot into the chat.
     
     Example:
-    { "bytebot_screenshot": {} }
+    { "computer_screenshot": {} }
     """
-    client = await get_bytebot_client(context)
+    client = await get_computer_client(context)
     try:
         screenshot = await client.get_screenshot()
         if screenshot:
@@ -100,7 +100,7 @@ async def computer_click(x, y, context=None):
     if x is None or y is None:
         return {"status": "error", "message": "Missing x or y coordinates"}
     
-    client = await get_bytebot_client(context)
+    client = await get_computer_client(context)
     result = await client.click(x, y)
     
     # Get a screenshot after clicking to show the result
@@ -127,7 +127,7 @@ async def computer_type(text, context=None):
     if not text:
         return {"status": "error", "message": "Missing text parameter"}
     
-    client = await get_bytebot_client(context)
+    client = await get_computer_client(context)
     result = await client.type_text(text)
     
     # Get a screenshot after typing to show the result
@@ -154,7 +154,7 @@ async def computer_press_key(key, context=None):
     if not key:
         return {"status": "error", "message": "Missing key parameter"}
     
-    client = await get_bytebot_client(context)
+    client = await get_computer_client(context)
     result = await client.press_key(key)
     
     # Get a screenshot after pressing key to show the result
@@ -181,7 +181,7 @@ async def computer_navigate(url, context=None):
     if not url:
         return {"status": "error", "message": "Missing url parameter"}
     
-    client = await get_bytebot_client(context)
+    client = await get_computer_client(context)
     result = await client.navigate_to(url)
     
     # Get a screenshot after navigation to show the result
@@ -208,7 +208,7 @@ async def computer_scroll(amount, axis='v', context=None):
     { "computer_scroll": {"amount": 300} }  # Scroll down 300 pixels
     { "computer_scroll": {"amount": -100, "axis": "h"} }  # Scroll left 100 pixels
     """
-    client = await get_bytebot_client(context)
+    client = await get_computer_client(context)
     result = await client.scroll(amount, axis)
     
     # Get a screenshot after scrolling to show the result
@@ -233,7 +233,7 @@ async def computer_mouse_move(x, y, context=None):
     Example:
     { "computer_mouse_move": {"x": 100, "y": 200} }
     """
-    client = await get_bytebot_client(context)
+    client = await get_computer_client(context)
     result = await client.mouse_move(x, y)
     return result
 
@@ -245,7 +245,7 @@ async def computer_right_click(context=None):
     Example:
     { "computer_right_click": {} }
     """
-    client = await get_bytebot_client(context)
+    client = await get_computer_client(context)
     result = await client.right_click()
     
     # Get a screenshot after clicking to show the result
@@ -267,7 +267,7 @@ async def computer_double_click(context=None):
     Example:
     { "computer_double_click": {} }
     """
-    client = await get_bytebot_client(context)
+    client = await get_computer_client(context)
     result = await client.double_click()
     
     # Get a screenshot after clicking to show the result
@@ -295,7 +295,7 @@ async def computer_drag(start_x, start_y, end_x, end_y, hold_ms=100, context=Non
     Example:
     { "computer_drag": {"start_x": 100, "start_y": 200, "end_x": 300, "end_y": 400} }
     """
-    client = await get_bytebot_client(context)
+    client = await get_computer_client(context)
     result = await client.drag(start_x, start_y, end_x, end_y, hold_ms)
     
     # Get a screenshot after dragging to show the result
@@ -316,5 +316,5 @@ async def computer_get_cursor_position(context=None):
     Example:
     { "computer_get_cursor_position": {} }
     """
-    client = await get_bytebot_client(context)
+    client = await get_computer_client(context)
     return await client.get_cursor_position()
