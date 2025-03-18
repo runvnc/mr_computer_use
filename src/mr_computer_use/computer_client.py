@@ -7,6 +7,38 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+def map_key_to_xdotool(key):
+    """
+    Maps common key names to their xdotool equivalents.
+    This ensures consistent handling of special keys across the codebase.
+    
+    Args:
+        key: The key name to map
+        
+    Returns:
+        The xdotool key name
+    """
+    # Dictionary mapping common key names to xdotool key names
+    key_map = {
+        # Common name conversions
+        "enter": "Return",
+        "return": "Return",
+        "esc": "Escape",
+        "escape": "Escape",
+        "tab": "Tab",
+        "space": "space",
+        "backspace": "BackSpace",
+        "delete": "Delete",
+        # Arrow keys
+        "up": "Up", "down": "Down", "left": "Left", "right": "Right",
+        # Other special keys
+        "home": "Home", "end": "End", "pageup": "Page_Up", "pagedown": "Page_Down",
+        "insert": "Insert", "printscreen": "Print",
+    }
+    
+    # Return the mapped key or the original if not in the map (case-insensitive check)
+    return key_map.get(key.lower(), key)
+
 class ComputerClient:
     def __init__(self, api_url="http://localhost:3100"):
         self.api_url = api_url
@@ -83,9 +115,11 @@ class ComputerClient:
     async def press_key(self, key):
         """Press a keyboard key"""
         try:
+            # Map the key to its xdotool equivalent
+            xdotool_key = map_key_to_xdotool(key)
             async with aiohttp.ClientSession() as session:
                 url = f"{self.api_url}/computer-use/key"
-                payload = {"key": key}
+                payload = {"key": xdotool_key}
                 async with session.post(url, json=payload) as response:
                     return await self._handle_response(response)
         except Exception as e:
@@ -100,7 +134,7 @@ class ComputerClient:
             await self.click(100, 100)  # Click somewhere in the desktop
             await self.press_key("alt-F2")  # Open run dialog
             await self.type_text("firefox")  # Type firefox
-            await self.press_key("Return")  # Press enter
+            await self.press_key("enter")  # Press enter
             
             # Wait for browser to open
             import asyncio
@@ -109,8 +143,7 @@ class ComputerClient:
             # Type the URL and navigate
             await self.press_key("ctrl-l")  # Focus address bar
             await self.type_text(url)  # Type the URL
-            await self.press_key("Return")  # Press enter
-            
+            await self.press_key("enter")  # Press enter            
             return {"status": "ok", "message": f"Navigated to {url}"}
         except Exception as e:
             logger.error(f"Navigate error: {str(e)}")
