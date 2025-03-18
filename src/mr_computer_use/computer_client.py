@@ -29,6 +29,27 @@ class ComputerClient:
             logger.error(f"Screenshot error: {str(e)}")
             return None
     
+    async def _handle_response(self, response):
+        """Handle API responses, accounting for HTML or non-JSON responses"""
+        if response.status in [200, 201, 204]:
+            content_type = response.headers.get('Content-Type', '')
+            if 'application/json' in content_type:
+                try:
+                    return await response.json()
+                except Exception as e:
+                    logger.warning(f"Failed to parse JSON despite content type: {str(e)}")
+                    return {"status": "ok", "message": f"Command executed (status: {response.status})"}
+            else:
+                # Success but not JSON response
+                return {"status": "ok", "message": f"Command executed (status: {response.status})"}
+        else:
+            # Error response
+            try:
+                error_data = await response.json()
+                return {"status": "error", "message": str(error_data)}
+            except:
+                return {"status": "error", "message": f"Request failed with status: {response.status}"}
+
     async def click(self, x, y):
         """Click at the specified coordinates"""
         try:
@@ -36,12 +57,13 @@ class ComputerClient:
                 # First move to the coordinates
                 url = f"{self.api_url}/computer-use/mouse-move"
                 payload = {"x": x, "y": y}
-                await session.post(url, json=payload)
+                async with session.post(url, json=payload) as response:
+                    await self._handle_response(response)
                 
                 # Then click
                 url = f"{self.api_url}/computer-use/left-click"
                 async with session.post(url) as response:
-                    return await response.json()
+                    return await self._handle_response(response)
         except Exception as e:
             logger.error(f"Click error: {str(e)}")
             return {"status": "error", "message": str(e)}
@@ -53,7 +75,7 @@ class ComputerClient:
                 url = f"{self.api_url}/computer-use/type"
                 payload = {"text": text}
                 async with session.post(url, json=payload) as response:
-                    return await response.json()
+                    return await self._handle_response(response)
         except Exception as e:
             logger.error(f"Type text error: {str(e)}")
             return {"status": "error", "message": str(e)}
@@ -65,7 +87,7 @@ class ComputerClient:
                 url = f"{self.api_url}/computer-use/key"
                 payload = {"key": key}
                 async with session.post(url, json=payload) as response:
-                    return await response.json()
+                    return await self._handle_response(response)
         except Exception as e:
             logger.error(f"Press key error: {str(e)}")
             return {"status": "error", "message": str(e)}
@@ -106,7 +128,7 @@ class ComputerClient:
                 url = f"{self.api_url}/computer-use/scroll"
                 payload = {"amount": amount, "axis": axis}
                 async with session.post(url, json=payload) as response:
-                    return await response.json()
+                    return await self._handle_response(response)
         except Exception as e:
             logger.error(f"Scroll error: {str(e)}")
             return {"status": "error", "message": str(e)}
@@ -118,7 +140,7 @@ class ComputerClient:
                 url = f"{self.api_url}/computer-use/mouse-move"
                 payload = {"x": x, "y": y}
                 async with session.post(url, json=payload) as response:
-                    return await response.json()
+                    return await self._handle_response(response)
         except Exception as e:
             logger.error(f"Mouse move error: {str(e)}")
             return {"status": "error", "message": str(e)}
@@ -129,7 +151,7 @@ class ComputerClient:
             async with aiohttp.ClientSession() as session:
                 url = f"{self.api_url}/computer-use/right-click"
                 async with session.post(url) as response:
-                    return await response.json()
+                    return await self._handle_response(response)
         except Exception as e:
             logger.error(f"Right click error: {str(e)}")
             return {"status": "error", "message": str(e)}
@@ -140,7 +162,7 @@ class ComputerClient:
             async with aiohttp.ClientSession() as session:
                 url = f"{self.api_url}/computer-use/double-click"
                 async with session.post(url) as response:
-                    return await response.json()
+                    return await self._handle_response(response)
         except Exception as e:
             logger.error(f"Double click error: {str(e)}")
             return {"status": "error", "message": str(e)}
@@ -158,7 +180,7 @@ class ComputerClient:
                     "holdMs": hold_ms
                 }
                 async with session.post(url, json=payload) as response:
-                    return await response.json()
+                    return await self._handle_response(response)
         except Exception as e:
             logger.error(f"Drag error: {str(e)}")
             return {"status": "error", "message": str(e)}
@@ -169,7 +191,7 @@ class ComputerClient:
             async with aiohttp.ClientSession() as session:
                 url = f"{self.api_url}/computer-use/cursor-position"
                 async with session.get(url) as response:
-                    return await response.json()
+                    return await self._handle_response(response)
         except Exception as e:
             logger.error(f"Get cursor position error: {str(e)}")
             return {"status": "error", "message": str(e)}
