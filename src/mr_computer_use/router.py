@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from lib.templates import render
-from .docker_utils import check_docker, start_bytebot_container, stop_bytebot_container
+from .docker_utils import check_docker, start_computer_container, stop_computer_container
 import docker
 import logging
 
@@ -43,11 +43,11 @@ async def computer_use_status(request: Request):
 @router.post("/computer_use/api/start")
 async def computer_use_start(request: Request):
     """Start computer use container"""
-    result = await start_bytebot_container()
+    result = await start_computer_container()
     return JSONResponse(result)
 
 @router.post("/computer_use/api/stop")
 async def computer_use_stop(request: Request):
     """Stop computer use container"""
-    result = await stop_bytebot_container()
+    result = await stop_computer_container()
     return JSONResponse(result)
