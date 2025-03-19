@@ -170,34 +170,6 @@ async def computer_press_key(key, context=None):
     return result
 
 @command()
-async def computer_navigate(url, context=None):
-    """Navigate to a URL in the browser in the computer use virtual desktop.
-    
-    Parameters:
-    url - String. The URL to navigate to.
-    
-    Example:
-    { "computer_navigate": {"url": "https://www.example.com"} }
-    """
-    if not url:
-        return {"status": "error", "message": "Missing url parameter"}
-    
-    client = await get_computer_client(context)
-    result = await client.navigate_to(url)
-    
-    # Get a screenshot after navigation to show the result
-    try:
-        # Wait for page to load
-        await asyncio.sleep(3)  
-        screenshot = await client.get_screenshot()
-        if screenshot:
-            await context.format_image_message(screenshot)
-    except Exception as e:
-        logger.error(f"Post-navigate screenshot error: {str(e)}")
-        pass  # Don't fail the command if screenshot fails
-    
-    return result
-@command()
 async def computer_scroll(amount, axis='v', context=None):
     """Scroll the page vertically or horizontally.
     

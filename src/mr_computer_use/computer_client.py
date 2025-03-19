@@ -126,29 +126,6 @@ class ComputerClient:
             logger.error(f"Press key error: {str(e)}")
             return {"status": "error", "message": str(e)}
 
-    async def navigate_to(self, url):
-        """Navigate to a URL in the browser"""
-        # This requires multiple steps as there's no direct API
-        try:
-            # Start Firefox (assuming it's in the dock or desktop)
-            await self.click(100, 100)  # Click somewhere in the desktop
-            await self.press_key("alt-F2")  # Open run dialog
-            await self.type_text("firefox")  # Type firefox
-            await self.press_key("enter")  # Press enter
-            
-            # Wait for browser to open
-            import asyncio
-            await asyncio.sleep(3)
-            
-            # Type the URL and navigate
-            await self.press_key("ctrl-l")  # Focus address bar
-            await self.type_text(url)  # Type the URL
-            await self.press_key("enter")  # Press enter            
-            return {"status": "ok", "message": f"Navigated to {url}"}
-        except Exception as e:
-            logger.error(f"Navigate error: {str(e)}")
-            return {"status": "error", "message": str(e)}
-
     async def scroll(self, amount, axis='v'):
         """Scroll vertically or horizontally
         
