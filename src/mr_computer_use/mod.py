@@ -1,4 +1,5 @@
 from lib.providers.commands import command
+from lib.pipelines.pipe import pipe
 import docker
 import asyncio
 import logging
@@ -318,3 +319,48 @@ async def computer_get_cursor_position(context=None):
     """
     client = await get_computer_client(context)
     return await client.get_cursor_position()
+
+@command()
+async def computer_get_screen_size(context=None):
+    """Get the current screen size of the virtual desktop.
+    
+    Example:
+    { "computer_get_screen_size": {} }
+    """
+    client = await get_computer_client(context)
+    return await client.get_screen_size()
+
+
+@pipe(name='filter_messages', priority=10)
+async def add_screen_size_to_message(data: dict, context=None) -> dict:
+    """Add screen size information to the system message"""
+    try:
+        # Only proceed if there are messages
+        if 'messages' in data and isinstance(data['messages'], list) and len(data['messages']) > 0:
+            # Get the first message (system message)
+            if data['messages'][0]['role'] == 'system':
+                # Get the computer client
+                client = await get_computer_client(context)
+                
+                # Get the screen size
+                screen_size = await client.get_screen_size()
+                
+                # If successful, add to system message
+                if screen_size and screen_size.get("status") == "ok":
+                    width = screen_size.get("width", "unknown")
+                    height = screen_size.get("height", "unknown")
+                    
+                    # Format the screen size info
+                    screen_size_info = f"\n\nCOMPUTER USE SCREEN SIZE: {width}x{height}"
+                    
+                    # Add to system message
+                    if isinstance(data['messages'][0]['content'], str):
+                        if "COMPUTER USE SCREEN SIZE:" not in data['messages'][0]['content']:
+                            data['messages'][0]['content'] += screen_size_info
+                    # Could handle other content types if needed
+    except Exception as e:
+        logger.error(f"Error adding screen size to system message: {str(e)}")
+        # Continue without adding screen size on error
+        pass
+        
+    return data

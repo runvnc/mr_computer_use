@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="mr_computer_use",
-    version="1.0.1",
+    version="1.0.2",
     packages=find_packages(where="src"),
     package_dir={"":"src"},
     package_data={

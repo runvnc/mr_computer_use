@@ -229,6 +229,17 @@ class ComputerClient:
             logger.error(f"Get cursor position error: {str(e)}")
             return {"status": "error", "message": str(e)}
 
+    async def get_screen_size(self):
+        """Get the current screen size of the virtual desktop"""
+        try:
+            async with aiohttp.ClientSession() as session:
+                url = f"{self.api_url}/computer-use/screen-size"
+                async with session.get(url) as response:
+                    return await self._handle_response(response)
+        except Exception as e:
+            logger.error(f"Get screen size error: {str(e)}")
+            return {"status": "error", "message": str(e)}
+
 @service()
 async def get_computer_client(context=None):
     """Get a configured computer client instance"""

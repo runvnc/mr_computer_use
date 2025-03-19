@@ -1,6 +1,6 @@
 {
   "name": "MindRoot Computer Use",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Enables AI agents to control a virtual desktop environment",
   "services": [
     "check_docker",
@@ -23,6 +23,7 @@
     "computer_right_click",
     "computer_double_click",
     "computer_drag",
-    "computer_get_cursor_position"
+    "computer_get_cursor_position",
+    "computer_get_screen_size"
   ]
 }
