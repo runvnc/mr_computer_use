@@ -12,7 +12,8 @@ DEFAULT_CONFIG = {
     "container_name": "mindroot_computer_use",
     "ports": {
         "3100/tcp": 3100,  # Computer Use API
-        "3001/tcp": 3001,  # Web Desktop
+        "3001/tcp": 3001,  # Web Desktop HTTPS
+        "3000/tcp": 3000,  # Web Desktop HTTP
     },
     "build_if_not_found": True,  # Whether to attempt building if image not found
     "repo_url": "https://github.com/runvnc/mr_computer_use_server.git"
