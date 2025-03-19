@@ -164,7 +164,7 @@ class ComputerUseViewer extends BaseEl {
         
         <div class="screen">
           ${this.containerStatus === 'running' ?
-            html`<iframe src="http://localhost:6080/vnc.html?autoconnect=true" frameborder="0"></iframe>` :
+            html`<iframe src="http://localhost:3000/" frameborder="0"></iframe>` :
             html`<div class="status">
               ${this.containerStatus === 'starting' ? 'Starting computer use container...' :
                 this.containerStatus === 'stopping' ? 'Stopping computer use container...' :
