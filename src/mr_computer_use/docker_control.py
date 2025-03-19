@@ -119,7 +119,10 @@ async def start_computer_container(context=None):
             image_result = await ensure_image_available(context)
             if image_result["status"] != "ok":
                 return image_result
-            
+
+            print('-------------------------------------------------------------------------------------')
+            print("Starting docker container with ports", config['ports'])
+
             # Create and start new container
             container = client.containers.run(
                 config['docker_image'],

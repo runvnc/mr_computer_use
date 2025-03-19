@@ -2,7 +2,7 @@ from lib.providers.commands import command
 import docker
 import asyncio
 import logging
-from .docker_utils import check_docker, build_computer_image, ensure_image_available, start_computer_container, stop_computer_container
+from .docker_control import check_docker, build_computer_image, ensure_image_available, start_computer_container, stop_computer_container
 from .computer_client import get_computer_client
 
 logger = logging.getLogger(__name__)

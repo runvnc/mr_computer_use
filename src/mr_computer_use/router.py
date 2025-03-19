@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from lib.templates import render
-from .docker_utils import check_docker, start_computer_container, stop_computer_container
+from .docker_control import check_docker, start_computer_container, stop_computer_container
 import docker
 import logging
 
