@@ -43,6 +43,8 @@ async def computer_use_status(request: Request):
 @router.post("/computer_use/api/start")
 async def computer_use_start(request: Request):
     """Start computer use container"""
+    print("###################################################################")
+    print("Starting computer use container")
     result = await start_computer_container()
     return JSONResponse(result)
 
