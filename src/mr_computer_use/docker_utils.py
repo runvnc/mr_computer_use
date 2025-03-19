@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 # Configuration with defaults
 DEFAULT_CONFIG = {
-    "docker_image": "mindroot/computer-use:latest",  # Pre-built Docker Hub image
+    "docker_image": "runvnc/mr-computer-use:latest",  # Pre-built Docker Hub image
     "container_name": "mindroot_computer_use",
     "ports": {
         "3100/tcp": 3100,  # Computer Use API
