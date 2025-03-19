@@ -2,9 +2,9 @@
 <script type="module" src="/mr_computer_use/static/js/computer-use-viewer.js"></script>
 {% endblock %}
 
-{% block insert %}
-<details class="computer-use-section">
-  <summary><span class="material-icons">computer</span> Computer Use VM</summary>
-  <computer-use-viewer></computer-use-viewer>
-</details>
+{% block pre_content %}
+  <div class="main">
+        <chat-ai sessionid="{{ log_id }}" agent_name="{{ agent_name }}"></chat-ai>
+    </div>
 {% endblock %}
+
